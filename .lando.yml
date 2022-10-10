@@ -1,0 +1,72 @@
+name: laravel
+proxy:
+  appserver:
+    - laravel.lndo.site
+  phpmyadmin:
+    - pma.lndo.site
+#  mailhog:
+#    - mailhog.lndo.site
+events:
+  pre-destroy:
+    appserver: bash /app/lando/scripts/laravel/destroy-laravel.sh
+services:
+  appserver:
+    type: php:8.1
+    via: apache:2.4
+    ssl: true
+    xdebug: false
+    webroot: ./laravel/public
+    build_as_root:
+      - bash /app/lando/scripts/system/setup-system.sh
+      - bash /app/lando/scripts/system/setup-ssh.sh
+      - bash /app/lando/scripts/system/setup-user-root.sh
+    build:
+      - bash /app/lando/scripts/system/setup-user-www-data.sh
+      - bash /app/lando/scripts/node/setup-n-nodejs-npm-yarn.sh
+      - bash /app/lando/scripts/laravel/setup-laravel-fresh.sh
+      - bash /app/lando/scripts/laravel/setup-laravel-jetstream.sh
+#      - bash /app/lando/scripts/laravel/setup-laravel-post.sh # ssh local-docker 'bash /app/lando/scripts/laravel/setup-laravel-post.sh'
+    run_as_root:
+      - bash /app/lando/scripts/system/run-as-root.sh
+    composer_version: 2-latest
+    scanner: false
+    config:
+      php: ./configs/php/php.ini
+    moreHttpPorts:
+      - '3000'
+      - '22222'
+    overrides:
+      ports:
+        - '3000:3000'
+        - '22222:22222'
+      environment:
+        # Support debugging CLI with XDEBUG.
+        PHP_IDE_CONFIG: "serverName=appserver"
+        XDEBUG_SESSION_START: PHPSTORM
+  database:
+    type: mysql:8.0
+    portforward: 63306
+    scanner: false
+    creds:
+      user: laravel
+      password: laravel
+      database: laravel
+    authentication: caching_sha2_password
+    config:
+      database: ./configs/mysql/my-custom.cnf
+  phpmyadmin:
+    type: phpmyadmin:5.1
+    ssl: true
+    scanner: false
+    hosts:
+      - database
+#  mailhog:
+#    type: mailhog:v1.0.1
+#    ssl: true
+#    portforward: false
+#    scanner: false
+#    hogfrom:
+#      - appserver
+excludes:
+  - .git
+  - .idea
