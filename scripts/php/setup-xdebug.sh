@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# TODO: Add server detectiona and execution of right one
+
 # XDEBUG
 # For manual turning on and off with help of the Tooling section
 

@@ -9,3 +9,5 @@
 2. Install Lando
 3. Run [`lando start`](#code)
 4. Run [`lando db-import /path/to/file.sql`](#code)
+
+# TODO: Add drupal aliases
