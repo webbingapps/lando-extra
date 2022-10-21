@@ -21,8 +21,8 @@ if ! wp core is-installed; then
   wp core install \
     --url=https://wordpress.lndo.site/ \
     --title="Example WordPress site" \
-    --admin_user="webbingapps" \
-    --admin_email="admin@webbingapps.com" \
+    --admin_user="wordpress" \
+    --admin_email="admin@example.com" \
     --admin_password="password" \
     --skip-email
 
