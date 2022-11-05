@@ -2,3 +2,4 @@
 
 # Start services
 service ssh start
+service cron start

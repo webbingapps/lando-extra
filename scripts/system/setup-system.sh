@@ -3,7 +3,7 @@
 # System
 apt update -y
 apt upgrade -y
-apt install vim neofetch net-tools openssh-server wget lsof iptables -y
+apt install vim neofetch net-tools openssh-server wget lsof iptables cron -y
 
 # Miscelanea
 
