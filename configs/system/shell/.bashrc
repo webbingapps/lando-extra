@@ -106,3 +106,7 @@ if ! shopt -oq posix; then
     . /etc/bash_completion
   fi
 fi
+
+# DENO
+export DENO_INSTALL="/var/www/.deno"
+export PATH="$DENO_INSTALL/bin:$PATH"
