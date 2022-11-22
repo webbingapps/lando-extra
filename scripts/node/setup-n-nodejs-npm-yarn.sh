@@ -9,7 +9,7 @@ rm -f $USER_PATH/n
 curl -L https://raw.githubusercontent.com/tj/n/master/bin/n -o n
 
 # Install Nodejs 18
-bash n 18
+bash n 16
 
 # Install latest NPM, Yarn and set up Corepack
 npm install --global npm@latest yarn@latest
