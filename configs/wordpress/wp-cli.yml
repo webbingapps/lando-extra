@@ -13,7 +13,7 @@ config create:
   extra-php: |
     define( 'RECOVERY_MODE_EMAIL', 'foo@bar.com' );
     define( 'WP_DEBUG_DISPLAY', false );
-    define( 'WP_DEBUG_LOG', '/app/lando/logs/php.log' );
+    define( 'WP_DEBUG_LOG', '/app/php.log' );
     define( 'DISABLE_WP_CRON', true );
     define( 'AUTOSAVE_INTERVAL', 300 );
     define( 'WP_POST_REVISIONS', 5 );
