@@ -1,0 +1,12 @@
+name: example-project
+proxy:
+  appserver:
+    - example-project.lndo.site
+services:
+  appserver:
+    type: php:8.1
+    via: apache:2.4
+  database:
+    type: mariadb:10.6
+  redis:
+    type: redis:6

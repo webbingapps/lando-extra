@@ -1,0 +1,277 @@
+# TODO: Add Drupal tools and excludes
+# https://github.com/thinktandem/template-drupal8/blob/master/.lando.base.yml
+# TODO: Replace events scripts with Lando-Extra ones, and with Apache/Nginx detector
+keys: false
+events:
+  pre-wp:
+    - appserver: rm -f /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini && /etc/init.d/apache2 reload
+    #NGINX - appserver: rm -f /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini && pkill -o -USR2 php-fpm
+  post-wp:
+    - appserver: docker-php-ext-enable xdebug && /etc/init.d/apache2 reload
+    #NGINX - appserver: docker-php-ext-enable xdebug && pkill -o -USR2 php-fpm
+services:
+  appserver:
+    ssl: true
+    xdebug: true
+    webroot: .
+    volumes:
+      - /absolute/path/to/lando-extra:/lando-extra
+      - /absolute/path/to/lando-extra/configs/wordpress/wp-cli.yml:/var/www/wp-cli.yml
+    build_as_root:
+      - bash /lando-extra/scripts/system/setup-system.sh
+      - bash /lando-extra/scripts/system/setup-ssh.sh
+      - bash /lando-extra/scripts/system/setup-user-root.sh
+    build:
+      - bash /lando-extra/scripts/system/setup-user-www-data.sh
+      - bash /lando-extra/scripts/php/setup-pickle.sh
+      - bash /lando-extra/scripts/php/setup-php-extensions.sh
+      - bash /lando-extra/scripts/php/setup-phpredis.sh
+      - bash /lando-extra/scripts/node/setup-n-nodejs-npm-yarn.sh
+      - bash /lando-extra/scripts/wordpress/setup-wordpress-utils.sh
+    run_as_root:
+      - bash /lando-extra/scripts/system/run-as-root.sh
+    composer_version: 2-latest
+    config:
+      php: /absolute/path/to/lando-extra/configs/php/php.ini
+    moreHttpPorts:
+      - '3000'
+      - '3001'
+      - '8000'
+      - '22222'
+    overrides:
+      ports:
+        - '3000:3000'
+        - '3001:3001'
+        - '8000:8000'
+        - '22222:22222'
+  database:
+    authentication: caching_sha2_password # This setting only works on mysql:8.0
+    config:
+      database: /absolute/path/to/lando-extra/configs/mysql/my-custom.cnf
+  redis:
+    config:
+      server: /home/arman/phpstormprojects/webbingapps/lando-extra/configs/redis/redis.conf
+  phpmyadmin:
+    type: phpmyadmin:5.1
+    ssl: true
+    hosts:
+      - database
+tooling:
+  php:
+    service: :service
+    cmd: php
+    user: www-data
+    options:
+      service:
+        default: appserver
+        describe: Run php in different service
+        alias:
+          - s
+  pickle:
+    description: PHP extensions manager.
+    service: :service
+    cmd: pickle
+    user: root
+    options:
+      service:
+        default: appserver
+        describe: Run pickle in different service
+        alias:
+          - s
+  phpunitdebug:
+    service: :service
+    cmd: php -d xdebug.remote_port=9003 vendor/bin/phpunit
+    user: www-data
+    options:
+      service:
+        default: appserver
+        describe: Run phpunit in different service
+        alias:
+          - s
+  composer:
+    service: :service
+    cmd: composer
+    user: www-data
+    options:
+      service:
+        default: appserver
+        describe: Run composer in different service
+        alias:
+          - s
+  artisan:
+    service: :service
+    cmd: artisan
+    user: www-data
+    options:
+      service:
+        default: appserver
+        describe: Run artisan in different service
+        alias:
+          - s
+  laravel:
+    service: :service
+    cmd: laravel
+    user: www-data
+    options:
+      service:
+        default: appserver
+        describe: Run laravel in different service
+        alias:
+          - s
+  pint:
+    service: :service
+    cmd: ./vendor/bin/pint
+    user: www-data
+    options:
+      service:
+        default: appserver
+        describe: Run laravel in different service
+        alias:
+          - s
+  wp:
+    service: :service
+    cmd: wp
+    user: www-data
+    options:
+      service:
+        default: appserver
+        describe: Run wp in different service
+        alias:
+          - s
+  n:
+    service: :service
+    cmd: cd ~ && bash n
+    user: www-data
+    options:
+      service:
+        default: appserver
+        describe: Run n in different service
+        alias:
+          - s
+  node:
+    service: :service
+    cmd: node
+    user: www-data
+    options:
+      service:
+        default: appserver
+        describe: Run node in different service
+        alias:
+          - s
+  npx:
+    service: :service
+    cmd: npx
+    user: www-data
+    options:
+      service:
+        default: appserver
+        describe: Run npx in different service
+        alias:
+          - s
+  npm:
+    service: :service
+    cmd: npm
+    user: www-data
+    options:
+      service:
+        default: appserver
+        describe: Run npm in different service
+        alias:
+          - s
+  yarn:
+    service: :service
+    cmd: yarn
+    user: www-data
+    options:
+      service:
+        default: appserver
+        describe: Run yarn in different service
+        alias:
+          - s
+  next:
+    service: :service
+    cmd: next
+    user: www-data
+    options:
+      service:
+        default: appserver
+        describe: Run it in a different service
+        alias:
+          - s
+  deno:
+    service: :service
+    cmd: /var/www/.deno/bin/deno
+    user: www-data
+    options:
+      service:
+        default: appserver
+        describe: Run it in a different service
+        alias:
+          - s
+  xdebug-on:
+    service: :service
+    description: Enable xdebug.
+    # APACHE
+    cmd: rm -f /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini && docker-php-ext-enable xdebug && /etc/init.d/apache2 reload && echo "Xdebug enabled"
+    #NINGX
+    #cmd: rm -f /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini && docker-php-ext-enable xdebug && pkill -o -USR2 php-fpm && echo "Xdebug enabled"
+    user: root
+    options:
+      service:
+        default: appserver
+        describe: Run it in a different service
+        alias:
+          - s
+  xdebug-off:
+    service: :service
+    description: Disable xdebug.
+    # APACHE
+    cmd: rm -f /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini && /etc/init.d/apache2 reload && echo "Xdebug disabled"
+    # NGINX
+    #cmd: rm -f /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini && pkill -o -USR2 php-fpm && echo "Xdebug disabled"
+    user: root
+    options:
+      service:
+        default: appserver
+        describe: Run it in a different service
+        alias:
+          - s
+  'db-export [file]':
+    service: :host
+    description: Exports database from a database service to a file
+    cmd: /helpers/sql-export.sh
+    user: root
+    options:
+      host:
+        description: The database service to use
+        default: database
+        alias:
+          - h
+      stdout:
+        description: Dump database to stdout
+  'db-import <file>':
+    service: :host
+    description: Imports a dump file into a database service
+    cmd: /helpers/sql-import.sh
+    user: root
+    options:
+      host:
+        description: The database service to use
+        default: database
+        alias:
+          - h
+      no-wipe:
+        description: Do not destroy the existing database before an import
+        boolean: true
+excludes:
+  - .git
+  - .idea
+  - vendor
+  - node_modules
+  - drush
+  - scripts
+  - web/core
+  - web/modules/contrib
+  - web/profiles/contrib
+  - web/sites/default/files
+  - web/themes/contrib

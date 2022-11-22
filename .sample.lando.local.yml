@@ -1,0 +1,14 @@
+services:
+  appserver:
+    overrides:
+      extra_hosts:
+        - ${LANDO_HOST_NAME_DEV:-host}:${LANDO_HOST_GATEWAY_DEV:-host-gateway}
+  database:
+    portforward: 63306 # For allowing external connections for apps like Navicat
+    creds:
+      user: dbuser
+      password: dbpassword
+      database: dbname
+  redis:
+    persist: true
+    portforward: 6379
