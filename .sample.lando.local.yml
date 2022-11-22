@@ -2,7 +2,7 @@ services:
   appserver:
     overrides:
       extra_hosts:
-        - ${LANDO_HOST_NAME_DEV:-host}:${LANDO_HOST_GATEWAY_DEV:-host-gateway}
+        - ${LANDO_HOST_NAME_DEV:-host}:${LANDO_HOST_GATEWAY_DEV:-host-gateway} # For help Xdebug connect with the Host
   database:
     portforward: 63306 # For allowing external connections for apps like Navicat
     creds:

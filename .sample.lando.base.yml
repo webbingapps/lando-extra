@@ -188,6 +188,16 @@ tooling:
         describe: Run yarn in different service
         alias:
           - s
+  gulp:
+    service: :service
+    cmd: gulp
+    user: www-data
+    options:
+      service:
+        default: appserver
+        describe: Run it in a different service
+        alias:
+          - s
   next:
     service: :service
     cmd: next
