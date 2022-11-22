@@ -3,7 +3,8 @@
 # System
 apt update -y
 apt upgrade -y
-apt install vim neofetch net-tools openssh-server wget lsof iptables cron -y
+apt install vim neofetch net-tools openssh-server wget lsof iptables cron iputils-ping -y
+apt clean -y && apt autoclean -y && apt autoremove -y && rm -rf /var/lib/apt/lists/* && rm -rf /var/lib/cache/* && rm -rf /var/lib/log/* && rm -rf /tmp/*
 
 # Miscelanea
 
