@@ -40,7 +40,7 @@ if ! wp core is-installed; then
   wp post delete "$(wp post list --post_type='page' --format=ids)" --force
 
   # Install necessary content
-  wp theme install twentytwentytwo --activate
+  wp theme install twentytwentythree --activate
 
   # Set up client's data
   # Create user
