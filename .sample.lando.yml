@@ -6,7 +6,10 @@ services:
   appserver:
     type: php:8.1
     via: apache:2.4
+    scanner: false
   database:
     type: mariadb:10.6
+    scanner: false
   redis:
     type: redis:6
+    scanner: false

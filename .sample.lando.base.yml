@@ -2,13 +2,6 @@
 # https://github.com/thinktandem/template-drupal8/blob/master/.lando.base.yml
 # TODO: Replace events scripts with Lando-Extra ones, and with Apache/Nginx detector
 keys: false
-events:
-  pre-wp:
-    - appserver: rm -f /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini && /etc/init.d/apache2 reload
-    #NGINX - appserver: rm -f /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini && pkill -o -USR2 php-fpm
-  post-wp:
-    - appserver: docker-php-ext-enable xdebug && /etc/init.d/apache2 reload
-    #NGINX - appserver: docker-php-ext-enable xdebug && pkill -o -USR2 php-fpm
 services:
   appserver:
     ssl: true
@@ -21,11 +14,11 @@ services:
       - bash /lando-extra/scripts/system/setup-system.sh
       - bash /lando-extra/scripts/system/setup-ssh.sh
       - bash /lando-extra/scripts/system/setup-user-root.sh
-    build:
-      - bash /lando-extra/scripts/system/setup-user-www-data.sh
       - bash /lando-extra/scripts/php/setup-pickle.sh
       - bash /lando-extra/scripts/php/setup-php-extensions.sh
       - bash /lando-extra/scripts/php/setup-phpredis.sh
+    build:
+      - bash /lando-extra/scripts/system/setup-user-www-data.sh
       - bash /lando-extra/scripts/node/setup-n-nodejs-npm-yarn.sh
       - bash /lando-extra/scripts/wordpress/setup-wordpress-utils.sh
     run_as_root:
@@ -49,6 +42,9 @@ services:
     config:
       database: /absolute/path/to/lando-extra/configs/mysql/my-custom.cnf
   redis:
+    type: redis:6
+    persist: true
+    portforward: 6379
     config:
       server: /home/arman/phpstormprojects/webbingapps/lando-extra/configs/redis/redis.conf
   phpmyadmin:
@@ -57,6 +53,16 @@ services:
     hosts:
       - database
 tooling:
+  redis-cli:
+    service: :service
+    cmd: redis-cli
+    user: www-data
+    options:
+      service:
+        default: redis
+        describe: Run php in different service
+        alias:
+          - s
   php:
     service: :service
     cmd: php
@@ -273,6 +279,17 @@ tooling:
       no-wipe:
         description: Do not destroy the existing database before an import
         boolean: true
+  wp-sync-db:
+    service: :service
+    description: Imports a dump file into a WordPress database and search-replaces source domain with local domain
+    cmd: bash /lando-extra/scripts/database/wordpress-database-setup.sh
+    user: www-data
+    options:
+      service:
+        default: appserver
+        describe: Run it in a different service
+        alias:
+          - s
 excludes:
   - .git
   - .idea
