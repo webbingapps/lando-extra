@@ -7,3 +7,4 @@ cd ~ || return
 
 # Install
 echo "Installing Additional PHP extensions"
+yes | pickle install igbinary
