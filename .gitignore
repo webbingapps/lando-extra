@@ -1,4 +1,5 @@
 # Project
 .ssh/
+scripts/project-*/
 !.gitignore
 !.lando.yml
