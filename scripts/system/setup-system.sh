@@ -2,7 +2,7 @@
 
 # System
 apt update -y
-apt upgrade -y
+#apt upgrade -y
 apt install procps lsb-release vim neofetch openssh-server wget net-tools lsof iptables cron iputils-ping -y
 
 # Miscelanea
