@@ -2,56 +2,6 @@
 # https://github.com/thinktandem/template-drupal8/blob/master/.lando.base.yml
 # TODO: Replace events scripts with Lando-Extra ones, and with Apache/Nginx detector
 keys: false
-services:
-  appserver:
-    ssl: true
-    xdebug: true
-    webroot: .
-    volumes:
-      - /absolute/path/to/lando-extra:/lando-extra
-      - /absolute/path/to/lando-extra/configs/wordpress/wp-cli.yml:/var/www/wp-cli.yml
-    build_as_root:
-      - bash /lando-extra/scripts/system/setup-system.sh
-      - bash /lando-extra/scripts/system/setup-ssh.sh
-      - bash /lando-extra/scripts/system/setup-user-root.sh
-      - bash /lando-extra/scripts/php/setup-pickle.sh
-      - bash /lando-extra/scripts/php/setup-php-extensions.sh
-      - bash /lando-extra/scripts/php/setup-phpredis.sh
-    build:
-      - bash /lando-extra/scripts/system/setup-user-www-data.sh
-      - bash /lando-extra/scripts/node/setup-n-nodejs-npm-yarn.sh
-      - bash /lando-extra/scripts/wordpress/setup-wordpress-utils.sh
-    run_as_root:
-      - bash /lando-extra/scripts/system/run-as-root.sh
-    composer_version: 2-latest
-    config:
-      php: /absolute/path/to/lando-extra/configs/php/php.ini
-    moreHttpPorts:
-      - '3000'
-      - '3001'
-      - '8000'
-      - '22222'
-    overrides:
-      ports:
-        - '3000:3000'
-        - '3001:3001'
-        - '8000:8000'
-        - '22222:22222'
-  database:
-    authentication: caching_sha2_password # This setting only works on mysql:8.0
-    config:
-      database: /absolute/path/to/lando-extra/configs/mysql/my-custom.cnf
-  redis:
-    type: redis:6
-    persist: true
-    portforward: 6379
-    config:
-      server: /home/arman/phpstormprojects/webbingapps/lando-extra/configs/redis/redis.conf
-  phpmyadmin:
-    type: phpmyadmin:5.1
-    ssl: true
-    hosts:
-      - database
 tooling:
   redis-cli:
     service: :service
@@ -61,6 +11,16 @@ tooling:
       service:
         default: redis
         describe: Run php in different service
+        alias:
+          - s
+  mysql:
+    service: :service
+    cmd: mysql
+    user: root
+    options:
+      service:
+        default: database
+        describe: Run mysql in different service
         alias:
           - s
   php:
@@ -102,6 +62,24 @@ tooling:
       service:
         default: appserver
         describe: Run composer in different service
+        alias:
+          - s
+  symfony:
+    service: :service
+    cmd: symfony
+    options:
+      service:
+        default: appserver
+        describe: Run symfony in different service
+        alias:
+          - s
+  encore:
+    service: :service
+    cmd: encore
+    options:
+      service:
+        default: node
+        describe: Run encore in different service
         alias:
           - s
   artisan:
@@ -157,70 +135,144 @@ tooling:
   node:
     service: :service
     cmd: node
-    user: www-data
     options:
       service:
-        default: appserver
+        default: node
         describe: Run node in different service
         alias:
           - s
   npx:
     service: :service
     cmd: npx
-    user: www-data
     options:
       service:
-        default: appserver
+        default: node
         describe: Run npx in different service
         alias:
           - s
   npm:
     service: :service
     cmd: npm
-    user: www-data
     options:
       service:
-        default: appserver
+        default: node
         describe: Run npm in different service
         alias:
           - s
   yarn:
     service: :service
     cmd: yarn
-    user: www-data
     options:
       service:
-        default: appserver
+        default: node
         describe: Run yarn in different service
         alias:
           - s
   gulp:
     service: :service
     cmd: gulp
-    user: www-data
     options:
       service:
-        default: appserver
+        default: node
         describe: Run it in a different service
         alias:
           - s
   next:
     service: :service
     cmd: next
-    user: www-data
     options:
       service:
-        default: appserver
+        default: node
         describe: Run it in a different service
         alias:
           - s
   deno:
     service: :service
     cmd: /var/www/.deno/bin/deno
-    user: www-data
     options:
       service:
         default: appserver
+        describe: Run it in a different service
+        alias:
+          - s
+  python:
+    service: :service
+    cmd: python
+    options:
+      service:
+        default: python
+        describe: Run it in a different service
+        alias:
+          - s
+  ansible:
+    service: :service
+    cmd: ansible
+    options:
+      service:
+        default: python
+        describe: Run it in a different service
+        alias:
+          - s
+  ansible-config:
+    service: :service
+    cmd: ansible-config
+    options:
+      service:
+        default: python
+        describe: Run it in a different service
+        alias:
+          - s
+  ansible-doc:
+    service: :service
+    cmd: ansible-doc
+    options:
+      service:
+        default: python
+        describe: Run it in a different service
+        alias:
+          - s
+  ansible-galaxy:
+    service: :service
+    cmd: ansible-galaxy
+    options:
+      service:
+        default: python
+        describe: Run it in a different service
+        alias:
+          - s
+  ansible-inventory:
+    service: :service
+    cmd: ansible-inventory
+    options:
+      service:
+        default: python
+        describe: Run it in a different service
+        alias:
+          - s
+  ansible-playbook:
+    service: :service
+    cmd: ansible-playbook
+    options:
+      service:
+        default: python
+        describe: Run it in a different service
+        alias:
+          - s
+  ansible-pull:
+    service: :service
+    cmd: ansible-pull
+    options:
+      service:
+        default: python
+        describe: Run it in a different service
+        alias:
+          - s
+  ansible-vault:
+    service: :service
+    cmd: ansible-vault
+    options:
+      service:
+        default: python
         describe: Run it in a different service
         alias:
           - s
@@ -228,9 +280,9 @@ tooling:
     service: :service
     description: Enable xdebug.
     # APACHE
-    cmd: rm -f /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini && docker-php-ext-enable xdebug && /etc/init.d/apache2 reload && echo "Xdebug enabled"
+    #cmd: rm -f /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini && docker-php-ext-enable xdebug && /etc/init.d/apache2 reload && echo "Xdebug enabled"
     #NINGX
-    #cmd: rm -f /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini && docker-php-ext-enable xdebug && pkill -o -USR2 php-fpm && echo "Xdebug enabled"
+    cmd: rm -f /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini && docker-php-ext-enable xdebug && pkill -o -USR2 php-fpm && echo "Xdebug enabled"
     user: root
     options:
       service:
@@ -242,9 +294,9 @@ tooling:
     service: :service
     description: Disable xdebug.
     # APACHE
-    cmd: rm -f /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini && /etc/init.d/apache2 reload && echo "Xdebug disabled"
+    #cmd: rm -f /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini && /etc/init.d/apache2 reload && echo "Xdebug disabled"
     # NGINX
-    #cmd: rm -f /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini && pkill -o -USR2 php-fpm && echo "Xdebug disabled"
+    cmd: rm -f /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini && pkill -o -USR2 php-fpm && echo "Xdebug disabled"
     user: root
     options:
       service:
@@ -279,10 +331,28 @@ tooling:
       no-wipe:
         description: Do not destroy the existing database before an import
         boolean: true
+  drop-multisite-db-tables:
+    service: :service
+    description: Drop multisite tables
+    cmd:
+      - mysql -u root --skip-column-names -e "SET FOREIGN_KEY_CHECKS = 0; DROP TABLE IF EXISTS wp6w_blogs, wp6w_blogmeta, wp6w_blogs_versions, wp6w_registration_log, wp6w_signups, wp6w_site, wp6w_sitemeta;" wordpress
+    user: root
+    options:
+      service:
+        default: database
+        describe: Run it in a different service
+        alias:
+          - s
   wp-sync-db:
     service: :service
     description: Imports a dump file into a WordPress database and search-replaces source domain with local domain
-    cmd: bash /lando-extra/scripts/database/wordpress-database-setup.sh
+    cmd:
+#      - echo 'FROM LIVE TO LOCAL'
+      - wp search-replace '/full/path/to/app/on/server' '/app' --skip-columns=guid
+      - wp search-replace '//www.example.com' '//example.lndo.site' --skip-columns=guid
+      - wp search-replace 'www.example.com' 'example.lndo.site' --skip-columns=guid
+      - wp search-replace '//example.com' '//example.lndo.site' --skip-columns=guid
+      - wp search-replace 'example.com' 'example.lndo.site' --skip-columns=guid --skip-tables=wp_users
     user: www-data
     options:
       service:
