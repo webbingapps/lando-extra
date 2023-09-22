@@ -1,4 +1,5 @@
-# docker build -t devwithlando/php:8.2-apache-4 .
+# sudo docker build --no-cache --network host -t webbingapps/php:8.2-apache-4 .
+# sudo docker push webbingapps/php:8.2-apache-4
 
 FROM php:8.2-apache-bullseye
 
@@ -82,4 +83,20 @@ RUN mkdir -p /usr/share/man/man1 /usr/share/man/man7 \
   && docker-php-ext-configure gd --enable-gd --with-jpeg --with-webp --with-freetype \
   && docker-php-ext-install gd
 
+
+# Install Tools
+
+# Install Symfony
+RUN cd ~ \
+  && wget https://get.symfony.com/cli/installer -O - | bash \
+  && mv ~/.symfony5/bin/symfony /usr/local/bin/symfony
+
+# Install WP Cli
+RUN cd ~ \
+  && curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar \
+  && chmod +x wp-cli.phar \
+  && mv wp-cli.phar /usr/local/bin/wp
+COPY --chown=www-data:www-data ./wp-cli.yml /var/www/wp-cli.yml
+
+# Tests
 RUN curl https://dl.yarnpkg.com
