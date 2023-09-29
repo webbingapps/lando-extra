@@ -1,3 +1,4 @@
+# Dockerfile from https://github.com/lando/php/blob/main/images/8.1-fpm/Dockerfile
 # sudo docker build --no-cache --network host -t webbingapps/php:8.1-fpm-4 .
 # sudo docker push webbingapps/php:8.1-fpm-4
 
@@ -46,7 +47,7 @@ RUN mkdir -p /usr/share/man/man1 /usr/share/man/man7 \
   && pecl install imagick \
   && pecl install memcached \
   && pecl install oauth \
-  && pecl install redis-5.3.4 \
+  && pecl install redis-5.3.7 \
   && pecl install xdebug \
   && docker-php-ext-configure ldap --with-libdir=lib/$(uname -m)-linux-gnu/ \
   && docker-php-ext-enable apcu \
@@ -71,7 +72,7 @@ RUN mkdir -p /usr/share/man/man1 /usr/share/man/man7 \
   && docker-php-ext-install soap \
   && docker-php-ext-install zip \
   && php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
-  && php composer-setup.php --install-dir=/usr/local/bin --filename=composer --version=2.2.18 \
+  && php composer-setup.php --install-dir=/usr/local/bin --filename=composer --version=2.2.12 \
   && php -r "unlink('composer-setup.php');" \
   && chsh -s /bin/bash www-data && mkdir -p /var/www/.composer && chown -R www-data:www-data /var/www \
   && apt-get -y clean \
@@ -82,20 +83,6 @@ RUN mkdir -p /usr/share/man/man1 /usr/share/man/man7 \
   && docker-php-ext-install imap \
   && docker-php-ext-configure gd --enable-gd --with-jpeg --with-webp --with-freetype \
   && docker-php-ext-install gd
-
-# Install Tools
-
-# Install Symfony
-RUN cd ~ \
-  && wget https://get.symfony.com/cli/installer -O - | bash \
-  && mv ~/.symfony5/bin/symfony /usr/local/bin/symfony
-
-# Install WP Cli
-RUN cd ~ \
-  && curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar \
-  && chmod +x wp-cli.phar \
-  && mv wp-cli.phar /usr/local/bin/wp
-COPY --chown=www-data:www-data ./wp-cli.yml /var/www/wp-cli.yml
 
 # Tests
 RUN curl https://dl.yarnpkg.com
